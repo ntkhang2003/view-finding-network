@@ -15,10 +15,14 @@ def fetch_image(url):
         return
 
     print('Downloading', filename)
-    file, mime = urllib.request.urlretrieve(url)
-    photo = Image.open(file)
-    photo.save(full_path)
-    os.remove(file)  # Clean up the temporary file
+    try:
+        urllib.request.urlretrieve(url, full_path)
+        photo = Image.open(full_path)
+        photo.verify()  # Check if the image is valid
+    except Exception as e:
+        print(f'Failed to download {url}: {e}')
+        if os.path.exists(full_path):
+            os.remove(full_path)  # Remove incomplete file
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
